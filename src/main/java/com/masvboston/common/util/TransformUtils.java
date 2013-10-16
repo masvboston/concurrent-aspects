@@ -1,12 +1,12 @@
 package com.masvboston.common.util;
 
+import static com.masvboston.common.util.ValidationUtils.checkEmpty;
+import static com.masvboston.common.util.ValidationUtils.checkNull;
+import static com.masvboston.common.util.ValidationUtils.checkNullOrEmpty;
+
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +17,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.apache.commons.beanutils.WrapDynaBean;
@@ -31,6 +32,35 @@ import org.apache.commons.lang3.StringUtils;
  * 
  */
 public class TransformUtils {
+	private static final String ERROR_DATE_NULL = "Date cannot be null";
+
+	private static final String ERROR_BAD_CLASS = "Provided bean class (type) cannot be null";
+
+	private static final String ERROR_BAD_XML = "XML cannot be null or empty";
+
+	private static final String ERROR_BAD_TO_XML = "Error while extractign XML from bean";
+
+	private static final String ERROR_NULL_BEAN = "Bean to convert to XML cannot be null";
+
+	private static final String ERROR_EMPTY_BOOLEAN = "Boolean string cannot be empty";
+
+	private static final String ERROR_NULL_BOOLEAN = "Boolean value cannot be null";
+
+	/**
+	 * {@value}
+	 */
+	private static final String ERROR_ON_COPY_PROPS =
+			"Error while populating target with properties";
+
+	/**
+	 * {@value}
+	 */
+	private static final String ERROR_BAD_PROP = "Property name cannot be null or empty";
+
+	/**
+	 * {@value}
+	 */
+	private static final String ERROR_NULL_TIMESTAMP = "Timestamp cannot be null";
 
 	/**
 	 * This helper lookup array is used for JSON escaping. It enables fast
@@ -40,6 +70,9 @@ public class TransformUtils {
 		'A', 'B', 'C', 'D', 'E', 'F' };
 
 
+	/**
+	 * Constructor is private to prevent instancing.
+	 */
 	private TransformUtils() {
 
 		// prevent instancing.
@@ -57,85 +90,21 @@ public class TransformUtils {
 	 */
 	public static boolean toBoolean(String value) {
 
-		ValidationUtils.checkNull(value, "Boolean value cannot be null");
+		checkNull(value, ERROR_NULL_BOOLEAN);
 		value = value.trim();
-		ValidationUtils.checkEmpty(value, "Boolean string cannot be empty");
+		checkEmpty(value, ERROR_EMPTY_BOOLEAN);
 
 		value = value.toUpperCase();
 
-		if (value.startsWith("Y") || value.startsWith("N")) {
-			return value.startsWith("Y") ? true : false;
+		if (value.startsWith("Y")) {
+			return true;
+		}
+
+		if (value.startsWith("N")) {
+			return false;
 		}
 
 		return BooleanUtils.toBoolean(value);
-	}
-
-
-	/**
-	 * Converts the given Numeric string and converts it to a numeric string
-	 * with the given precision.
-	 * 
-	 * @param bigDecimalValue
-	 *            The numeric value.
-	 * @param precision
-	 *            The precision desired.
-	 * @return String with the appropriate precision.
-	 */
-	public static String BigDecimalStringToDecimalFormat(final String bigDecimalValue,
-			final int precision) {
-
-		DecimalFormat decimalFormat = new DecimalFormat();
-		decimalFormat.setParseBigDecimal(true);
-		BigDecimal value = null;
-
-		try {
-			value = ((BigDecimal) decimalFormat.parse(bigDecimalValue));
-		}
-
-		catch (Exception e) {
-			throw new NumberFormatException();
-		}
-
-		return BigDecimalToDecimalFormat(value, precision);
-	}
-
-
-	public static String BigDecimalToDecimalFormat(final BigDecimal value, final int precision) {
-
-		DecimalFormat formatter = new DecimalFormat(getDecimalFormat(precision));
-		return formatter.format(value);
-	}
-
-
-	private static String getDecimalFormat(final int precision) {
-
-		String numericFormat = "####################################################";
-		String decimalFormat = "";
-		if (precision == 0) {
-			decimalFormat = "";
-		}
-		else if (precision == 1) {
-			decimalFormat = ".0";
-		}
-		else if (precision == 2) {
-			decimalFormat = ".00";
-		}
-		else if (precision == 3) {
-			decimalFormat = ".000";
-		}
-		else if (precision == 4) {
-			decimalFormat = ".0000";
-		}
-		else if (precision == 5) {
-			decimalFormat = ".00000";
-		}
-		else if (precision == 6) {
-			decimalFormat = ".000000";
-		}
-		else {
-			decimalFormat = ".00";
-		}
-		return numericFormat + decimalFormat;
 	}
 
 
@@ -148,9 +117,7 @@ public class TransformUtils {
 	 */
 	public static <T> String toXml(final T javaBean) {
 
-		if (javaBean == null) {
-			throw new IllegalArgumentException("Bean to convert to XML cannot be null");
-		}
+		checkNull(javaBean, ERROR_NULL_BEAN);
 
 		try {
 			JAXBContext jbCtx = JAXBContext.newInstance(javaBean.getClass());
@@ -164,7 +131,7 @@ public class TransformUtils {
 			return writer.toString();
 		}
 		catch (Exception e) {
-			throw new IllegalStateException(e);
+			throw new IllegalStateException(ERROR_BAD_TO_XML, e);
 		}
 	}
 
@@ -180,9 +147,8 @@ public class TransformUtils {
 	 */
 	public static <T> T fromXml(final String xml, final Class<T> beanType) {
 
-		if ((null == xml) || (0 == xml.trim().length())) {
-			throw new IllegalArgumentException("XML cannot be null or empty");
-		}
+		checkNullOrEmpty(xml, ERROR_BAD_XML);
+		checkNull(beanType, ERROR_BAD_CLASS);
 
 		try {
 			JAXBContext jbCtx = JAXBContext.newInstance(beanType);
@@ -199,15 +165,17 @@ public class TransformUtils {
 
 
 	/**
-	 * Takes the given Timestamp and returns a Date object.
+	 * Takes the given SQL Timestamp and returns a Date object.
 	 * 
-	 * @param sqlTimestamp
+	 * @param timeStamp
 	 *            The SQL timestamp.
 	 * @return a Java Date object.
 	 */
-	public static Date timestampToDate(final Timestamp sqlTimestamp) {
+	public static Date toDate(final Timestamp timeStamp) {
 
-		long time = sqlTimestamp.getTime();
+		checkNull(timeStamp, ERROR_NULL_TIMESTAMP);
+
+		long time = timeStamp.getTime();
 		return new Date(time);
 	}
 
@@ -219,44 +187,11 @@ public class TransformUtils {
 	 *            The java date to convert to a Timestamp.
 	 * @return A Timestamp with the given date.
 	 */
-	public static Timestamp dateToTimestamp(final Date javaDate) {
+	public static Timestamp toTimestamp(final Date javaDate) {
 
+		checkNull(javaDate, ERROR_DATE_NULL);
 		long time = javaDate.getTime();
 		return new Timestamp(time);
-	}
-
-
-	public static String dateToString(final Date javaDate) {
-
-		// TODO Determine real date format that will be used
-		DateFormat dateFormatter = new SimpleDateFormat();
-		return dateFormatter.format(javaDate);
-	}
-
-
-	/**
-	 * Takes the given Timestamp and returns a long.
-	 * 
-	 * @param sqlTimestamp
-	 *            The SQL timestamp.
-	 * @return a long.
-	 */
-	public static long timestampToLong(final Timestamp sqlTimestamp) {
-
-		return sqlTimestamp.getTime();
-	}
-
-
-	/**
-	 * Converts a Java long to a SQL Timestamp
-	 * 
-	 * @param date
-	 *            The long to convert to a Timestamp.
-	 * @return A Timestamp with the given date as a long.
-	 */
-	public static Timestamp longToTimestamp(final long date) {
-
-		return new Timestamp(date);
 	}
 
 
@@ -388,8 +323,9 @@ public class TransformUtils {
 	 */
 	public static String toCamelCase(String propName) {
 
+		ValidationUtils.checkNullOrEmpty(propName, ERROR_BAD_PROP);
+
 		// String[] parts = propName.split(COLUMN_NAME_DELIMITER);
-		// TODO make not English locale only if needed
 		// [ look for the following set
 		// ^ look for what is NOT the following:
 		// a-z lower case Latin
@@ -410,10 +346,57 @@ public class TransformUtils {
 			propName = StringUtils.lowerCase(propName);
 		}
 
-		if (propName.toLowerCase().equals("uuid")) {
-			propName = "uuid";
-		}
 		return propName;
+	}
+
+
+	/**
+	 * Utility method that copies the properties and their values in the given
+	 * map over to the target object. Properties that exist in the map but do
+	 * not exist on the object are ignored. Properties that exist on the target
+	 * object but do not exist in the Map remain intact.
+	 * 
+	 * @param properties
+	 *            The Map of property and values to assign. Cannot be null.
+	 * @param target
+	 *            The object to assign the values to. Cannot be null.
+	 * @param ignoreNullValues
+	 *            Set to true to have any null values in the properties map
+	 *            ignored.
+	 * @return The object after having properties assigned to it. This is the
+	 *         same object reference as the target parameter and is provided for
+	 *         convenience.
+	 */
+	public static <T> T copyProperties(Map<String, String> properties, final T target,
+			final boolean ignoreNullValues) {
+
+		if (ignoreNullValues) {
+
+			HashMap<String, String> m = new HashMap<String, String>();
+
+			String v = null;
+
+			for (Map.Entry<String, String> entry : properties.entrySet()) {
+
+				v = entry.getValue();
+
+				if (null != v) {
+					m.put(entry.getKey(), v);
+				}
+			}
+
+			properties = m;
+
+		}
+
+		try {
+			BeanUtils.copyProperties(target, properties);
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(ERROR_ON_COPY_PROPS, e);
+		}
+
+		return target;
 	}
 
 
