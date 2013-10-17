@@ -3,11 +3,11 @@ package com.masvboston.common.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Class with methods for various value and range checks. This class provides a
@@ -232,14 +232,20 @@ public class ValidationUtils {
 			throw new IllegalArgumentException(ERROR_BAD_MSG);
 		}
 
-		Set<Object> set = new HashSet<Object>();
-		set.addAll(values);
+		/*
+		 * Copy the contents into a collection we can control because we
+		 * shouldn't modify the given collection.
+		 */
+		ArrayList<Object> source = new ArrayList<Object>(values);
 
-		if (values.size() > set.size()) {
+		HashSet<Object> set = new HashSet<Object>();
+		set.addAll(source);
 
-			values.removeAll(set);
+		if (source.size() > set.size()) {
 
-			String items = values.toString();
+			source.removeAll(set);
+
+			String items = source.toString();
 
 			throw new IllegalArgumentException(errorMessage + ": " + items);
 		}
@@ -272,7 +278,7 @@ public class ValidationUtils {
 
 
 	/**
-	 * Checks the given collection to see of any of it's values are null.
+	 * Checks the given collection to see if it or any of it's values are null.
 	 * 
 	 * @param values
 	 *            collection to check.
@@ -286,7 +292,7 @@ public class ValidationUtils {
 
 
 	/**
-	 * Checks the given collection to see of any of it's values are null.
+	 * Checks the given collection to see if it or any of it's values are null.
 	 * 
 	 * @param values
 	 *            collection to check.
@@ -356,7 +362,7 @@ public class ValidationUtils {
 
 
 	/**
-	 * Checks the given array to see of any of it's values are null.
+	 * Checks the given array to see if it or any of it's values are null.
 	 * 
 	 * @param values
 	 *            Array to check.
@@ -370,7 +376,7 @@ public class ValidationUtils {
 
 
 	/**
-	 * Checks the given array to see if any of it's values are null.
+	 * Checks the given array to see if it or any of it's values are null.
 	 * 
 	 * @param values
 	 *            Array to check.
@@ -422,7 +428,9 @@ public class ValidationUtils {
 	 */
 	public static void checkNullOrEmpty(final String value, final String errorMessage) {
 
-		checkNullOrEmpty(errorMessage, ERROR_BAD_MSG);
+		checkNull(value, ERROR_BAD_MSG);
+
+		checkEmpty(errorMessage, ERROR_BAD_MSG);
 
 		checkNull(value, errorMessage);
 
@@ -437,11 +445,12 @@ public class ValidationUtils {
 	 * 
 	 * @param inputBean
 	 *            The Java bean to check.
-	 * 
+	 * @param propertyName
+	 *            A property to check for a value.
 	 * @param propertyNames
-	 *            1 or more property names to check to ensure they have a value.
-	 *            Property names can optionally specify a property description
-	 *            using a {@value ValidationUtils#PROPERTY_ATTR_DELIMITER}
+	 *            1 or more additional property names to check to ensure they
+	 *            have a value. Property names can optionally specify a property
+	 *            description using a {@link #PROPERTY_ATTR_DELIMITER}
 	 *            delimiter. If provided, the description is the value that will
 	 *            appear in the error message otherwise the property name is
 	 *            used. This means you can us the property description for
@@ -451,7 +460,7 @@ public class ValidationUtils {
 	 */
 	public static void checkPropertiesForValues(final Object inputBean,
 			final String... propertyNames) {
-		checkPropertiesForValues(inputBean, ERROR_BEAN_PROP_MISSING, propertyNames);
+		checkPropertiesForValues(ERROR_BEAN_PROP_MISSING, inputBean, propertyNames);
 	}
 
 
@@ -460,18 +469,21 @@ public class ValidationUtils {
 	 * Java bean. Also checks to ensure the given bean has the property being
 	 * checked.
 	 * 
-	 * @param inputBean
-	 *            The Java bean to check.
 	 * @param errorMsg
 	 *            The error message to throw in addition to the list of
 	 *            properties that are missing values. A <strong>null</strong>
 	 *            value will have the method use the default, an empty String
 	 *            will cause the default message to <strong>not</strong> be
-	 *            used.
+	 *            used. *
+	 * @param inputBean
+	 *            The Java bean to check.
+	 * 
+	 * @param propertyName
+	 *            A property name to check.
 	 * @param propertyNames
-	 *            1 or more property names to check to ensure they have a value.
-	 *            Property names can optionally specify a property description
-	 *            using a {@value ValidationUtils#PROPERTY_ATTR_DELIMITER}
+	 *            1 or more additional property names to check to ensure they
+	 *            have a value. Property names can optionally specify a property
+	 *            description using a {@link #PROPERTY_ATTR_DELIMITER}
 	 *            delimiter. If provided, the description is the value that will
 	 *            appear in the error message otherwise the property name is
 	 *            used. This means you can us the property description for
@@ -479,7 +491,7 @@ public class ValidationUtils {
 	 *            example: aknUserName | attributeUserName
 	 * 
 	 */
-	public static void checkPropertiesForValues(final Object inputBean, final String errorMsg,
+	public static void checkPropertiesForValues(final String errorMsg, final Object inputBean,
 			final String... propertyNames) {
 
 		/*
@@ -497,11 +509,12 @@ public class ValidationUtils {
 		 * Get all the properties and their values and check that the property
 		 * actually has the value.
 		 */
-		Map<String, String> properties = TransformUtils.describe(inputBean);
+		HashMap<String, String> properties = new HashMap<String, String>();
+		TransformUtils.describe(inputBean,true, properties);
 		StringBuilder errorMessage = new StringBuilder();
 
 		String value = null;
-		String propertyDesc;
+		String propertyDesc = null;
 		String[] propertyAttributes = null;
 
 		for (String property : propertyNames) {
