@@ -162,7 +162,8 @@ public class ThreadMachineController {
 	 */
 	protected ExecutorService getExecutorService(final String poolName) {
 
-		ValidationUtils.checkNullOrEmpty(poolName, true, ERROR_POOL_NAME);
+		ValidationUtils.checkNull(poolName, ERROR_POOL_NAME);
+		ValidationUtils.checkEmpty(poolName, ERROR_POOL_NAME);
 
 		ExecutorService svc = this.executors.get(poolName);
 

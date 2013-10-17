@@ -296,7 +296,7 @@ public class ValidationUtils {
 	 * @throws IllegalArgumentException
 	 *             The given collection is null or there are null values.
 	 */
-	public static void checkNull(final Collection<?> values, final String errorMessage) {
+	public static void checkNull(final Collection<?> values, String errorMessage) {
 
 		if (isNullOrEmpty(errorMessage)) {
 			throw new IllegalArgumentException(ERROR_BAD_MSG);
@@ -306,13 +306,13 @@ public class ValidationUtils {
 			throw new IllegalArgumentException(errorMessage);
 		}
 
-		msg = errorMessage + " at index ";
+		errorMessage += " at index ";
 
 		int i = 0;
 
 		for (Object value : values) {
 			if (null == value) {
-				throw new IllegalArgumentException(msg + i);
+				throw new IllegalArgumentException(errorMessage + i);
 			}
 			i++;
 		}
@@ -497,7 +497,7 @@ public class ValidationUtils {
 		 * Get all the properties and their values and check that the property
 		 * actually has the value.
 		 */
-		Map<String, String> properties = describe(inputBean);
+		Map<String, String> properties = TransformUtils.describe(inputBean);
 		StringBuilder errorMessage = new StringBuilder();
 
 		String value = null;
