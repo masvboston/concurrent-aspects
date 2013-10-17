@@ -633,7 +633,7 @@ public class ValidationUtils {
 		min = (null == min) ? Integer.MIN_VALUE : min;
 		max = (null == max) ? Integer.MAX_VALUE : max;
 
-		checkRange(Double.valueOf(value), Double.valueOf(min), Double.valueOf(max), null);
+		checkRange(Double.valueOf(value), Double.valueOf(min), Double.valueOf(max));
 
 	}
 
