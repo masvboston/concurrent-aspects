@@ -4,7 +4,11 @@ import static com.masvboston.common.util.ValidationUtils.checkEmpty;
 import static com.masvboston.common.util.ValidationUtils.checkForDuplicates;
 import static com.masvboston.common.util.ValidationUtils.checkNull;
 import static com.masvboston.common.util.ValidationUtils.checkPropertiesForValues;
+import static com.masvboston.common.util.ValidationUtils.checkRange;
+import static com.masvboston.common.util.ValidationUtils.extractOriginalException;
+import static com.masvboston.common.util.ValidationUtils.isEmpty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -402,7 +406,6 @@ public class TestValidationUtils {
 			assertEquals("Bean is missing values for properties | badValue", ex.getMessage().trim());
 		}
 
-
 		try {
 			checkPropertiesForValues(o, "value", "bogus");
 			fail();
@@ -415,56 +418,187 @@ public class TestValidationUtils {
 
 
 	@Test
-	public void testCheckPropertiesForValuesObjectStringStringArray() {
-		fail("Not yet implemented"); // TODO
+	public void testCheckPropertiesForValuesStringObjectStringArray() {
+		TestClass o = new TestClass();
+
+		checkPropertiesForValues(MSG_FAILED, o, "value");
+
+		try {
+			checkPropertiesForValues(MSG_FAILED, o, "value", "badValue");
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(MSG_FAILED + "badValue", e.getMessage().trim());
+		}
+
+		try {
+			checkPropertiesForValues(MSG_FAILED, o, "value", "bogus");
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("The bean does not have the property: bogus", e.getMessage().trim());
+		}
 	}
 
 
 	@Test
 	public void testCheckRangeDoubleDoubleDouble() {
-		fail("Not yet implemented"); // TODO
+
+		checkRange(1.0d, 0.0d, 2.0d);
+
+		try {
+			checkRange(-1.0d, 0.0d, 2.0d);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			// pass
+		}
+
+		try {
+			checkRange(2.1d, 0.0d, 2.0d);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			// pass
+		}
+
 	}
 
 
 	@Test
 	public void testCheckRangeDoubleDoubleDoubleString() {
-		fail("Not yet implemented"); // TODO
+		checkRange(1.0d, 0.0d, 2.0d, MSG_FAILED);
+
+		try {
+			checkRange(-1.0d, 0.0d, 2.0d, MSG_FAILED);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(MSG_FAILED, e.getMessage());
+		}
+
+		try {
+			checkRange(2.1d, 0.0d, 2.0d, MSG_FAILED);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(MSG_FAILED, e.getMessage());
+		}
 	}
 
 
 	@Test
 	public void testCheckRangeIntIntegerInteger() {
-		fail("Not yet implemented"); // TODO
+		checkRange(1, 0, 2);
+
+		try {
+			checkRange(-1, 0, 2);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			// pass
+		}
+
+		try {
+			checkRange(3, 0, 2);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			// pass
+		}
+
 	}
 
 
 	@Test
 	public void testCheckRangeIntIntegerIntegerString() {
-		fail("Not yet implemented"); // TODO
+		checkRange(1, 0, 2, MSG_FAILED);
+
+		try {
+			checkRange(-1, 0, 2, MSG_FAILED);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(MSG_FAILED, e.getMessage());
+		}
+
+		try {
+			checkRange(3, 0, 2, MSG_FAILED);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(MSG_FAILED, e.getMessage());
+		}
 	}
 
 
 	@Test
 	public void testCheckRangeLongLongLong() {
-		fail("Not yet implemented"); // TODO
+		checkRange(1L, 0L, 2L);
+
+		try {
+			checkRange(-1L, 0L, 2L);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			// pass
+		}
+
+		try {
+			checkRange(3L, 0L, 2L);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			// pass
+		}
+
 	}
 
 
 	@Test
 	public void testCheckRangeLongLongLongString() {
-		fail("Not yet implemented"); // TODO
+
+		checkRange(1L, 0L, 2L, MSG_FAILED);
+
+		try {
+			checkRange(-1L, 0L, 2L, MSG_FAILED);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(MSG_FAILED, e.getMessage());
+		}
+
+		try {
+			checkRange(3L, 0L, 2L, MSG_FAILED);
+			fail();
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals(MSG_FAILED, e.getMessage());
+		}
 	}
 
 
 	@Test
 	public void testExtractOriginalException() {
-		fail("Not yet implemented"); // TODO
+
+		Exception e = new Exception("original");
+		Exception e1 = new Exception("level1", e);
+		Exception e2 = new Exception("levle2", e1);
+
+		Throwable result = extractOriginalException(e2);
+
+		assertEquals("Exceptions should match", e, result);
 	}
 
 
 	@Test
 	public void testIsEmptyCollectionOfQ() {
-		fail("Not yet implemented"); // TODO
+
+		ArrayList<String> l = new ArrayList<String>();
+
+		assertTrue("Collection should be empty", isEmpty(l));
+		l.add("a");
+		assertFalse("Collection should be empty", isEmpty(l));
 	}
 
 
