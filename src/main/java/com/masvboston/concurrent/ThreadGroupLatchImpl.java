@@ -25,7 +25,7 @@ import com.masvboston.concurrent.error.ThreadShutdownException;
  * <strong> Failure to do so will result in orphaned objects awaiting to be
  * collected but never are. </strong>
  * 
- * <em>As a last resort you can call {@link #releaseAll()} method to de-construct all
+ * <em>As a last resort you can call {@link #releaseAll()} method to deconstruct all
  * tasks this class is holding to ensure there is no memory leak.</em>
  * 
  * 
