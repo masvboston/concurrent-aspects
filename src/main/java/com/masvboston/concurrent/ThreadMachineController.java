@@ -80,7 +80,7 @@ public class ThreadMachineController {
 	/**
 	 * Keeps a Map of thread pools by their unique ID.
 	 */
-	private Map<String, ExecutorService> executors = initExecutorService();
+	private final Map<String, ExecutorService> executors = initExecutorService();
 
 	/**
 	 * The instance of the thread group latch factory to use for managing
@@ -92,25 +92,25 @@ public class ThreadMachineController {
 	/**
 	 * Default event handler for thread events.
 	 */
-	private final ThreadEventListener DEFAULT_THREAD_EVENT_LISTENER =
+	private static final ThreadEventListener DEFAULT_THREAD_EVENT_LISTENER =
 			new DefaultThreadEventListener();
 
 	/**
 	 * Default event handler for thread machine events.
 	 */
-	private final ThreadMachineEventListener DEFAULT_THREAD_MACHINE_HANDLER =
+	private static final ThreadMachineEventListener DEFAULT_THREAD_MACHINE_HANDLER =
 			new DefaultThreadMachineEventListener();
 
 	/**
 	 * The current event handler for thread machine events.
 	 */
 	private volatile ThreadMachineEventListener threadMachineEventListener =
-			this.DEFAULT_THREAD_MACHINE_HANDLER;
+			DEFAULT_THREAD_MACHINE_HANDLER;
 
 	/**
 	 * The current thread event listener.
 	 */
-	private volatile ThreadEventListener threadEventListener = this.DEFAULT_THREAD_EVENT_LISTENER;
+	private volatile ThreadEventListener threadEventListener = DEFAULT_THREAD_EVENT_LISTENER;
 
 
 	/**
@@ -148,7 +148,8 @@ public class ThreadMachineController {
 	public void setThreadMachineEventListener(final ThreadMachineEventListener eventHandler) {
 
 		this.threadMachineEventListener =
-				null == eventHandler ? this.DEFAULT_THREAD_MACHINE_HANDLER : eventHandler;
+				null == eventHandler ? ThreadMachineController.DEFAULT_THREAD_MACHINE_HANDLER
+						: eventHandler;
 	}
 
 
@@ -211,7 +212,8 @@ public class ThreadMachineController {
 	public void setThreadEventListener(final ThreadEventListener eventListener) {
 
 		this.threadEventListener =
-				null == eventListener ? this.DEFAULT_THREAD_EVENT_LISTENER : eventListener;
+				null == eventListener ? ThreadMachineController.DEFAULT_THREAD_EVENT_LISTENER
+						: eventListener;
 	}
 
 
@@ -263,7 +265,8 @@ public class ThreadMachineController {
 
 			this.shutdown = false;
 
-			this.executors = initExecutorService();
+			this.executors.clear();
+			this.executors.putAll(initExecutorService());
 		}
 
 	}

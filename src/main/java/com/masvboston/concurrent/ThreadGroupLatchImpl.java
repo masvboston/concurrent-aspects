@@ -17,7 +17,7 @@ import com.masvboston.concurrent.error.ThreadShutdownException;
  * to finish before moving on. This class is meant to be used in conjunction
  * with aspects that manage the creation of threads and thread groups, but it
  * can be used without these aspects provided you follow one simple but very
- * important fule:
+ * important rule:
  * 
  * <h3>You must call {@link #awaitThreadGroupDone()} for every thread group
  * created</h3>
@@ -25,7 +25,7 @@ import com.masvboston.concurrent.error.ThreadShutdownException;
  * <strong> Failure to do so will result in orphaned objects awaiting to be
  * collected but never are. </strong>
  * 
- * <em>As a last resort you can call {@link #releaseAll()} method to deconstruct all
+ * <em>As a last resort you can call {@link #releaseAll()} method to de-construct all
  * tasks this class is holding to ensure there is no memory leak.</em>
  * 
  * 
@@ -46,8 +46,10 @@ import com.masvboston.concurrent.error.ThreadShutdownException;
  * <p/>
  * 
  * Multiple thread groups created in the same thread context are managed
- * sequentially, in the order in which they occur, since a thread group is
- * intself <strong>not</strong> a thread.
+ * sequentially in the order in which they occur.
+ * 
+ * <p/>
+ * This class is thread safe.
  * 
  * @author Mark Miller
  * 
