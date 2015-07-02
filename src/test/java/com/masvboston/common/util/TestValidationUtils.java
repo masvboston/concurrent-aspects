@@ -6,7 +6,7 @@ import static com.masvboston.common.util.ValidationUtils.checkNull;
 import static com.masvboston.common.util.ValidationUtils.checkPropertiesForValues;
 import static com.masvboston.common.util.ValidationUtils.checkRange;
 import static com.masvboston.common.util.ValidationUtils.extractOriginalException;
-import static com.masvboston.common.util.ValidationUtils.isEmpty;
+import static com.masvboston.common.util.ValidationUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -17,12 +17,17 @@ import java.util.Collection;
 
 import org.junit.Test;
 
+/**
+ * Unit tests to verify the operation of utility class of validation methods.
+ * 
+ * @author Mark Miller
+ * 
+ */
 public class TestValidationUtils {
 
 	private static final String MSG_FAILED = "failed";
 
-
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCheckEmptyCollectionOfQ() {
 
 		Collection<String> c = new ArrayList<String>();
@@ -33,17 +38,11 @@ public class TestValidationUtils {
 
 		c.clear();
 
-		try {
-			checkEmpty(c);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			// pass
-		}
+		checkEmpty(c);
+		fail();
 	}
 
-
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCheckEmptyCollectionOfQString() {
 
 		Collection<String> c = new ArrayList<String>();
@@ -54,17 +53,11 @@ public class TestValidationUtils {
 
 		c.clear();
 
-		try {
-			checkEmpty(c, "Failed");
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals(MSG_FAILED, e.getMessage());
-		}
+		checkEmpty(c, "Failed");
+		fail();
 	}
 
-
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCheckEmptyObjectArray() {
 
 		String[] a = { "a" };
@@ -72,15 +65,9 @@ public class TestValidationUtils {
 
 		checkEmpty(a);
 
-		try {
-			checkEmpty(b);
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			// Pass
-		}
+		checkEmpty(b);
+		fail();
 	}
-
 
 	@Test
 	public void testCheckEmptyObjectArrayString() {
@@ -92,27 +79,19 @@ public class TestValidationUtils {
 		try {
 			checkEmpty(b, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 
 		}
 	}
 
-
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCheckEmptyString() {
 		checkEmpty("a");
 
-		try {
-			checkEmpty("");
-			fail();
-		}
-		catch (IllegalArgumentException e) {
-			// Pass
-		}
+		checkEmpty("");
+		fail();
 	}
-
 
 	@Test
 	public void testCheckEmptyStringString() {
@@ -121,12 +100,10 @@ public class TestValidationUtils {
 		try {
 			checkEmpty("", MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 	}
-
 
 	@Test
 	public void testCheckForDuplicatesCollectionOfQString() {
@@ -140,12 +117,10 @@ public class TestValidationUtils {
 			c.add("a");
 			checkForDuplicates(c, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 	}
-
 
 	@Test
 	public void testCheckForDuplicatesObjectArrayStringArray() {
@@ -158,12 +133,10 @@ public class TestValidationUtils {
 		try {
 			checkForDuplicates(b, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 	}
-
 
 	@Test
 	public void testCheckNullCollectionOfQ() {
@@ -178,8 +151,7 @@ public class TestValidationUtils {
 			c.add(null);
 			checkNull(c);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
@@ -187,14 +159,12 @@ public class TestValidationUtils {
 			c = null;
 			checkNull(c);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 
 			// pass
 		}
 
 	}
-
 
 	@Test
 	public void testCheckNullCollectionOfQString() {
@@ -208,8 +178,7 @@ public class TestValidationUtils {
 			c.add(null);
 			checkNull(c, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertTrue(e.getMessage().startsWith(MSG_FAILED));
 		}
 
@@ -217,12 +186,10 @@ public class TestValidationUtils {
 			c = null;
 			checkNull(c, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertTrue(e.getMessage().startsWith(MSG_FAILED));
 		}
 	}
-
 
 	@Test
 	public void testCheckNullObject() {
@@ -236,14 +203,12 @@ public class TestValidationUtils {
 			checkNull(o);
 			fail();
 
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 
 			// pass
 		}
 
 	}
-
 
 	@Test
 	public void testCheckNullObjectString() {
@@ -256,12 +221,10 @@ public class TestValidationUtils {
 			checkNull(o, MSG_FAILED);
 			fail();
 
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 	}
-
 
 	@Test
 	public void testCheckNullObjectArray() {
@@ -274,8 +237,7 @@ public class TestValidationUtils {
 			checkNull(o);
 			fail();
 
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
@@ -283,13 +245,11 @@ public class TestValidationUtils {
 			o = null;
 			checkNull(o);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
 	}
-
 
 	@Test
 	public void testCheckNullObjectArrayString() {
@@ -302,8 +262,7 @@ public class TestValidationUtils {
 			checkNull(o, MSG_FAILED);
 			fail();
 
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertTrue(e.getMessage().startsWith(MSG_FAILED));
 		}
 
@@ -311,12 +270,10 @@ public class TestValidationUtils {
 			o = null;
 			checkNull(o, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertTrue(e.getMessage().startsWith(MSG_FAILED));
 		}
 	}
-
 
 	@Test
 	public void testCheckNullOrEmptyString() {
@@ -330,20 +287,17 @@ public class TestValidationUtils {
 		try {
 			checkNull(n);
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// pass
 		}
 
 		try {
 			checkNull(e);
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// pass
 		}
 	}
-
 
 	@Test
 	public void testCheckNullOrEmptyStringString() {
@@ -356,16 +310,14 @@ public class TestValidationUtils {
 		try {
 			checkNull(n, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertEquals(MSG_FAILED, ex.getMessage());
 		}
 
 		try {
 			checkNull(e, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertEquals(MSG_FAILED, ex.getMessage());
 		}
 	}
@@ -379,17 +331,14 @@ public class TestValidationUtils {
 			return "a";
 		};
 
-
 		public String getBadValue() {
 			return null;
 		}
-
 
 		public void setValue(final String s) {
 			// do nothing.
 		}
 	};
-
 
 	@Test
 	public void testCheckPropertiesForValuesObjectStringArray() {
@@ -401,21 +350,20 @@ public class TestValidationUtils {
 		try {
 			checkPropertiesForValues(o, "value", "badValue");
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
-			assertEquals("Bean is missing values for properties | badValue", ex.getMessage().trim());
+		} catch (IllegalArgumentException ex) {
+			assertEquals("Bean is missing values for properties | badValue", ex
+					.getMessage().trim());
 		}
 
 		try {
 			checkPropertiesForValues(o, "value", "bogus");
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
-			assertEquals("The bean does not have the property: bogus", ex.getMessage().trim());
+		} catch (IllegalArgumentException ex) {
+			assertEquals("The bean does not have the property: bogus", ex
+					.getMessage().trim());
 		}
 
 	}
-
 
 	@Test
 	public void testCheckPropertiesForValuesStringObjectStringArray() {
@@ -426,20 +374,18 @@ public class TestValidationUtils {
 		try {
 			checkPropertiesForValues(MSG_FAILED, o, "value", "badValue");
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED + "badValue", e.getMessage().trim());
 		}
 
 		try {
 			checkPropertiesForValues(MSG_FAILED, o, "value", "bogus");
 			fail();
-		}
-		catch (IllegalArgumentException e) {
-			assertEquals("The bean does not have the property: bogus", e.getMessage().trim());
+		} catch (IllegalArgumentException e) {
+			assertEquals("The bean does not have the property: bogus", e
+					.getMessage().trim());
 		}
 	}
-
 
 	@Test
 	public void testCheckRangeDoubleDoubleDouble() {
@@ -449,21 +395,18 @@ public class TestValidationUtils {
 		try {
 			checkRange(-1.0d, 0.0d, 2.0d);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
 		try {
 			checkRange(2.1d, 0.0d, 2.0d);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
 	}
-
 
 	@Test
 	public void testCheckRangeDoubleDoubleDoubleString() {
@@ -472,20 +415,17 @@ public class TestValidationUtils {
 		try {
 			checkRange(-1.0d, 0.0d, 2.0d, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 
 		try {
 			checkRange(2.1d, 0.0d, 2.0d, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 	}
-
 
 	@Test
 	public void testCheckRangeIntIntegerInteger() {
@@ -494,21 +434,18 @@ public class TestValidationUtils {
 		try {
 			checkRange(-1, 0, 2);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
 		try {
 			checkRange(3, 0, 2);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
 	}
-
 
 	@Test
 	public void testCheckRangeIntIntegerIntegerString() {
@@ -517,20 +454,17 @@ public class TestValidationUtils {
 		try {
 			checkRange(-1, 0, 2, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 
 		try {
 			checkRange(3, 0, 2, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 	}
-
 
 	@Test
 	public void testCheckRangeLongLongLong() {
@@ -539,21 +473,18 @@ public class TestValidationUtils {
 		try {
 			checkRange(-1L, 0L, 2L);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
 		try {
 			checkRange(3L, 0L, 2L);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// pass
 		}
 
 	}
-
 
 	@Test
 	public void testCheckRangeLongLongLongString() {
@@ -563,20 +494,17 @@ public class TestValidationUtils {
 		try {
 			checkRange(-1L, 0L, 2L, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 
 		try {
 			checkRange(3L, 0L, 2L, MSG_FAILED);
 			fail();
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals(MSG_FAILED, e.getMessage());
 		}
 	}
-
 
 	@Test
 	public void testExtractOriginalException() {
@@ -590,7 +518,6 @@ public class TestValidationUtils {
 		assertEquals("Exceptions should match", e, result);
 	}
 
-
 	@Test
 	public void testIsEmptyCollectionOfQ() {
 
@@ -601,48 +528,81 @@ public class TestValidationUtils {
 		assertFalse("Collection should be empty", isEmpty(l));
 	}
 
-
 	@Test
 	public void testIsEmptyObjectArray() {
-		fail("Not yet implemented"); // TODO
-	}
 
+		Object[] o = {};
+
+		boolean r = isEmpty(o);
+		assertTrue("Should report array as empty", r);
+
+		o = new Object[] { "a", "b" };
+		r = isEmpty(o);
+
+		assertFalse("There are now two items, so result should be false", r);
+	}
 
 	@Test
 	public void testIsEmptyString() {
-		fail("Not yet implemented"); // TODO
-	}
 
+		boolean r = isEmpty("");
+
+		assertTrue("String is empty, so should return true", r);
+
+		r = isEmpty("   ");
+		assertFalse("String is empty spaces, so should return false", r);
+	}
 
 	@Test
 	public void testIsNull() {
-		fail("Not yet implemented"); // TODO
-	}
+		boolean r = isNull(null);
+		assertTrue("Value should be true since the given value is null", r);
 
+		r = isNull("x");
+		assertFalse("Value is an empty string, so method should return false",
+				r);
+	}
 
 	@Test
 	public void testIsNullOrEmptyCollectionOfQ() {
 		fail("Not yet implemented"); // TODO
 	}
 
-
 	@Test
 	public void testIsNullOrEmptyObjectArray() {
-		fail("Not yet implemented"); // TODO
-	}
+		Object[] v = {};
+		boolean r = isNullOrEmpty(v);
+		assertTrue("Value is empty array so should return true", r);
 
+		v = null;
+		r = isNullOrEmpty(v);
+		assertTrue("Value is null so should return true", r);
+
+		v = new Object[] { "a", "b", "c" };
+		r = isNullOrEmpty(v);
+		assertFalse("Value is array of letters so should return false", r);
+	}
 
 	@Test
 	public void testIsNullOrEmptyString() {
-		fail("Not yet implemented"); // TODO
-	}
 
+		String v = "";
+		boolean r = isNullOrEmpty(v);
+		assertTrue("Value is empty string so should return true", r);
+
+		v = null;
+		r = isNullOrEmpty(v);
+		assertTrue("Value is null so should return true", r);
+
+		v = "   ";
+		r = isNullOrEmpty(v);
+		assertFalse("Value is series of spaces so should return false", r);
+	}
 
 	@Test
 	public void testSearchForException() {
 		fail("Not yet implemented"); // TODO
 	}
-
 
 	@Test
 	public void testStackTraceAsString() {
