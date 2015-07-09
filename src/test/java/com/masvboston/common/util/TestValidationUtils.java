@@ -118,7 +118,7 @@ public class TestValidationUtils {
 			checkForDuplicates(c, MSG_FAILED);
 			fail();
 		} catch (IllegalArgumentException e) {
-			assertEquals(MSG_FAILED, e.getMessage());
+			assertEquals(MSG_FAILED + ": []", e.getMessage());
 		}
 	}
 
@@ -134,7 +134,7 @@ public class TestValidationUtils {
 			checkForDuplicates(b, MSG_FAILED);
 			fail();
 		} catch (IllegalArgumentException e) {
-			assertEquals(MSG_FAILED, e.getMessage());
+			assertEquals(MSG_FAILED + ": []", e.getMessage());
 		}
 	}
 
@@ -282,17 +282,17 @@ public class TestValidationUtils {
 		String n = null;
 		String e = "";
 
-		checkNull(a);
+		checkNullOrEmpty(a);
 
 		try {
-			checkNull(n);
+			checkNullOrEmpty(n);
 			fail();
 		} catch (IllegalArgumentException ex) {
 			// pass
 		}
 
 		try {
-			checkNull(e);
+			checkNullOrEmpty(e);
 			fail();
 		} catch (IllegalArgumentException ex) {
 			// pass
@@ -306,6 +306,7 @@ public class TestValidationUtils {
 		String e = "";
 
 		checkNull(a, MSG_FAILED);
+		checkNull(e, MSG_FAILED);
 
 		try {
 			checkNull(n, MSG_FAILED);
@@ -314,12 +315,6 @@ public class TestValidationUtils {
 			assertEquals(MSG_FAILED, ex.getMessage());
 		}
 
-		try {
-			checkNull(e, MSG_FAILED);
-			fail();
-		} catch (IllegalArgumentException ex) {
-			assertEquals(MSG_FAILED, ex.getMessage());
-		}
 	}
 
 	/**
@@ -351,16 +346,14 @@ public class TestValidationUtils {
 			checkPropertiesForValues(o, "value", "badValue");
 			fail();
 		} catch (IllegalArgumentException ex) {
-			assertEquals("Bean is missing values for properties | badValue", ex
-					.getMessage().trim());
+			assertEquals("Bean is missing values for properties | badValue", ex.getMessage().trim());
 		}
 
 		try {
 			checkPropertiesForValues(o, "value", "bogus");
 			fail();
 		} catch (IllegalArgumentException ex) {
-			assertEquals("The bean does not have the property: bogus", ex
-					.getMessage().trim());
+			assertEquals("The bean does not have the property: bogus", ex.getMessage().trim());
 		}
 
 	}
@@ -382,8 +375,7 @@ public class TestValidationUtils {
 			checkPropertiesForValues(MSG_FAILED, o, "value", "bogus");
 			fail();
 		} catch (IllegalArgumentException e) {
-			assertEquals("The bean does not have the property: bogus", e
-					.getMessage().trim());
+			assertEquals("The bean does not have the property: bogus", e.getMessage().trim());
 		}
 	}
 
@@ -559,13 +551,23 @@ public class TestValidationUtils {
 		assertTrue("Value should be true since the given value is null", r);
 
 		r = isNull("x");
-		assertFalse("Value is an empty string, so method should return false",
-				r);
+		assertFalse("Value is an empty string, so method should return false", r);
 	}
 
 	@Test
 	public void testIsNullOrEmptyCollectionOfQ() {
-		fail("Not yet implemented"); // TODO
+		Collection<String> c = new ArrayList<String>();
+		c.add("a");
+		c.add("b");
+
+		boolean r = isNullOrEmpty(c);
+
+		assertFalse("The list should not be empty", r);
+		
+		c.clear();
+		r = isNullOrEmpty(c);
+		
+		assertTrue("The list should be empty", r);
 	}
 
 	@Test
@@ -601,12 +603,29 @@ public class TestValidationUtils {
 
 	@Test
 	public void testSearchForException() {
-		fail("Not yet implemented"); // TODO
+
+		Exception e = new NullPointerException();
+		Exception i = new IllegalArgumentException(e);
+		e = new RuntimeException(i);
+
+		Throwable t = searchForException(e, IllegalArgumentException.class);
+
+		assertEquals("Classes should be equal", t.getClass(), i.getClass());
+
 	}
 
 	@Test
 	public void testStackTraceAsString() {
-		fail("Not yet implemented"); // TODO
+
+		Exception e = new NullPointerException();
+		Exception i = new IllegalArgumentException(e);
+		e = new RuntimeException(i);
+
+		String strace = stackTraceAsString(e);
+		
+		checkNullOrEmpty(strace);
+		
+		assertTrue(strace.contains("Caused by: java.lang.NullPointerException"));
 	}
 
 }

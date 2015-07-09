@@ -1,6 +1,7 @@
 package com.masvboston.common.util;
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -52,8 +53,7 @@ public class ValidationUtils {
 	/**
 	 * {@value}
 	 */
-	private static final String ERROR_BEAN_PROP_MISSING =
-			"Bean is missing values for properties | ";
+	private static final String ERROR_BEAN_PROP_MISSING = "Bean is missing values for properties | ";
 
 	/**
 	 * {@value}
@@ -93,8 +93,7 @@ public class ValidationUtils {
 	/**
 	 * {@value}
 	 */
-	public static final String ERROR_OUT_OF_RANGE =
-			"Value of {0} is not in the range of min of {1} and a max of {2}";
+	public static final String ERROR_OUT_OF_RANGE = "Value of {0} is not in the range of min of {1} and a max of {2}";
 
 	/**
 	 * {@value}
@@ -112,7 +111,6 @@ public class ValidationUtils {
 	 */
 	private static final String PROPERTY_DELIM_REGEX = "\\|";
 
-
 	/**
 	 * Checks the given collection to see if it is empty.
 	 * 
@@ -127,7 +125,6 @@ public class ValidationUtils {
 
 		checkEmpty(value, ERROR_COLLECTION_EMPTY);
 	}
-
 
 	/**
 	 * Checks the given collection to see if it is empty.
@@ -148,7 +145,6 @@ public class ValidationUtils {
 		}
 	}
 
-
 	/**
 	 * Checks the given array to see if it is empty.
 	 * 
@@ -161,7 +157,6 @@ public class ValidationUtils {
 
 		checkEmpty(Arrays.asList(value), ERROR_ARY_EMPTY);
 	}
-
 
 	/**
 	 * Checks the given array to see if it is empty.
@@ -178,7 +173,6 @@ public class ValidationUtils {
 		checkEmpty(Arrays.asList(value), errorMessage);
 	}
 
-
 	/**
 	 * Checks the given String to see if it is empty.
 	 * 
@@ -188,7 +182,6 @@ public class ValidationUtils {
 	public static void checkEmpty(final String value) {
 		checkEmpty(value, ERROR_STR_EMPTY);
 	}
-
 
 	/**
 	 * Checks the given String to see if it is empty.
@@ -209,12 +202,10 @@ public class ValidationUtils {
 		}
 	}
 
-
 	/**
 	 * Checks given collection for duplicates and throws an exception if
 	 * duplicates are found. The error message identifies the duplicates. The
-	 * duplicate values are appended to the given error message if supplied or
-	 * the default error message, otherwise.
+	 * duplicate values are appended to the given error message.
 	 * 
 	 * @param values
 	 *            The values to check. Given set cannot be null nor can any of
@@ -239,7 +230,7 @@ public class ValidationUtils {
 		ArrayList<Object> source = new ArrayList<Object>(values);
 
 		HashSet<Object> set = new HashSet<Object>();
-		set.addAll(source);
+		set.addAll(values);
 
 		if (source.size() > set.size()) {
 
@@ -251,7 +242,40 @@ public class ValidationUtils {
 		}
 
 	}
+	/**
+	 * Checks given collection for duplicates and throws an exception if
+	 * duplicates are found. The error message identifies the duplicates. The
+	 * duplicate values are appended to the error message.
+	 * 
+	 * @param values
+	 *            The values to check. Given set cannot be null nor can any of
+	 *            the values. This routine does not check the given collection
+	 *            to see if it is null or has any null values. use
+	 *            {@link #checkNull(Collection)} and
+	 *            {@link #checkEmpty(Collection)} to assurance before calling
+	 *            this method.
+	 */
+	public void checkForDuplicates(final Collection<?> values) {
+		checkForDuplicates(values, ERROR_DUPES);
+	}
 
+
+	/**
+	 * Checks given array for duplicates and throws an exception if duplicates
+	 * are found. The error message identifies the duplicates. The duplicate
+	 * values are appended to the error message.
+	 * 
+	 * @param values
+	 *            The values to check. Given set cannot be null nor can any of
+	 *            the values. This routine does not check the given collection
+	 *            to see if it is null or has any null values. use
+	 *            {@link #checkNull(Collection)} and
+	 *            {@link #checkEmpty(Collection)} to assurance before calling
+	 *            this method.
+	 */
+	public void checkForDuplicates(final Object[] values) {
+		checkForDuplicates(values, ERROR_DUPES);
+	}
 
 	/**
 	 * Checks given array for duplicates and throws an exception if duplicates
@@ -268,14 +292,12 @@ public class ValidationUtils {
 	 *            this method.
 	 * 
 	 * @param aMsg
-	 *            An optional error message to use instead of the default of
-	 *            {@value #ERROR_DUPES}
+	 *            An error message to use instead of the default of
+	 *            {@value #ERROR_DUPES}.  Value cannot be null or empty.
 	 */
-	public static void checkForDuplicates(final Object[] values, final String... errorMessage) {
-
-		checkForDuplicates(Arrays.asList(values), ERROR_DUPES);
+	public static void checkForDuplicates(final Object[] values, final String errorMessage) {
+		checkForDuplicates(Arrays.asList(values), errorMessage);
 	}
-
 
 	/**
 	 * Checks the given collection to see if it or any of it's values are null.
@@ -289,7 +311,6 @@ public class ValidationUtils {
 	public static void checkNull(final Collection<?> values) {
 		checkNull(values, ERROR_VALUE_NULL);
 	}
-
 
 	/**
 	 * Checks the given collection to see if it or any of it's values are null.
@@ -324,7 +345,6 @@ public class ValidationUtils {
 		}
 	}
 
-
 	/**
 	 * Checks the given object and throws and exception if it is null.
 	 * 
@@ -337,7 +357,6 @@ public class ValidationUtils {
 	public static void checkNull(final Object value) {
 		checkNull(value, ERROR_VALUE_NULL);
 	}
-
 
 	/**
 	 * Checks the given object and throws and exception if it is null.
@@ -360,7 +379,6 @@ public class ValidationUtils {
 		}
 	}
 
-
 	/**
 	 * Checks the given array to see if it or any of it's values are null.
 	 * 
@@ -373,7 +391,6 @@ public class ValidationUtils {
 	public static void checkNull(final Object[] values) {
 		checkNull(values, ERROR_VALUE_NULL);
 	}
-
 
 	/**
 	 * Checks the given array to see if it or any of it's values are null.
@@ -399,7 +416,6 @@ public class ValidationUtils {
 		checkNull(Arrays.asList(values), errorMessage);
 	}
 
-
 	/**
 	 * Convenience method to check if a String is null or empty.
 	 * 
@@ -414,7 +430,6 @@ public class ValidationUtils {
 		checkNull(value);
 		checkEmpty(value);
 	}
-
 
 	/**
 	 * Convenience method to check if a String is null or empty. T
@@ -436,7 +451,6 @@ public class ValidationUtils {
 
 		checkEmpty(value, errorMessage);
 	}
-
 
 	/**
 	 * Utility method to check for the existence of property values in a given
@@ -462,7 +476,6 @@ public class ValidationUtils {
 			final String... propertyNames) {
 		checkPropertiesForValues(ERROR_BEAN_PROP_MISSING, inputBean, propertyNames);
 	}
-
 
 	/**
 	 * Utility method to check for the existence of property values in a given
@@ -510,7 +523,7 @@ public class ValidationUtils {
 		 * actually has the value.
 		 */
 		HashMap<String, String> properties = new HashMap<String, String>();
-		TransformUtils.describe(inputBean,true, properties);
+		TransformUtils.describe(inputBean, true, properties);
 		StringBuilder errorMessage = new StringBuilder();
 
 		String value = null;
@@ -526,8 +539,7 @@ public class ValidationUtils {
 				 * name.
 				 */
 				propertyDesc = property.trim();
-			}
-			else {
+			} else {
 
 				propertyAttributes = property.split(PROPERTY_DELIM_REGEX);
 				property = propertyAttributes[0].trim();
@@ -555,7 +567,6 @@ public class ValidationUtils {
 
 	}
 
-
 	/**
 	 * Check the given value to see if it falls within the given min and max,
 	 * inclusive, of the given values.
@@ -576,7 +587,6 @@ public class ValidationUtils {
 
 		checkRange(value, min, max, ERROR_OUT_OF_RANGE);
 	}
-
 
 	/**
 	 * Check the given value to see if it falls within the given min and max,
@@ -611,7 +621,6 @@ public class ValidationUtils {
 		}
 	}
 
-
 	/**
 	 * Check the given value to see if it falls within the given min and max,
 	 * inclusive, of the given values.
@@ -636,7 +645,6 @@ public class ValidationUtils {
 		checkRange(Double.valueOf(value), Double.valueOf(min), Double.valueOf(max));
 
 	}
-
 
 	/**
 	 * Check the given value to see if it falls within the given min and max,
@@ -666,7 +674,6 @@ public class ValidationUtils {
 
 	}
 
-
 	/**
 	 * Check the given value to see if it falls within the given min and max,
 	 * inclusive, of the given values.
@@ -690,7 +697,6 @@ public class ValidationUtils {
 		checkRange(Double.valueOf(value), Double.valueOf(min), Double.valueOf(max));
 
 	}
-
 
 	/**
 	 * Check the given value to see if it falls within the given min and max,
@@ -720,7 +726,6 @@ public class ValidationUtils {
 
 	}
 
-
 	/**
 	 * Given an exception, this method retrieves the original exception that
 	 * caused the error in the first place. This is not the same as
@@ -744,7 +749,6 @@ public class ValidationUtils {
 		return null == cause ? aException : extractOriginalException(cause);
 	}
 
-
 	/**
 	 * Tests given value to see if it is empty.
 	 * 
@@ -756,7 +760,6 @@ public class ValidationUtils {
 
 		return 0 == value.size();
 	}
-
 
 	/**
 	 * Tests given value to see if it is empty.
@@ -770,7 +773,6 @@ public class ValidationUtils {
 		return 0 == value.length;
 	}
 
-
 	/**
 	 * Tests given value to see if it is empty.
 	 * 
@@ -782,7 +784,6 @@ public class ValidationUtils {
 
 		return 0 == value.length();
 	}
-
 
 	/**
 	 * Method to check for null. This is here just for completeness.
@@ -796,7 +797,6 @@ public class ValidationUtils {
 		return null == arg;
 	}
 
-
 	/**
 	 * Tests given value to see if it is empty.
 	 * 
@@ -808,7 +808,6 @@ public class ValidationUtils {
 
 		return isNull(value) || isEmpty(value);
 	}
-
 
 	/**
 	 * Tests given value to see if it is empty.
@@ -822,7 +821,6 @@ public class ValidationUtils {
 		return isNull(value) || isEmpty(value);
 	}
 
-
 	/**
 	 * Tests given value to see if it is empty.
 	 * 
@@ -834,7 +832,6 @@ public class ValidationUtils {
 
 		return isNull(value) || isEmpty(value);
 	}
-
 
 	/**
 	 * Utility routine that searches an exception chain for the first instance
@@ -866,7 +863,6 @@ public class ValidationUtils {
 		return null == cause ? null : searchForException(cause, aExceptionClazz);
 
 	}
-
 
 	/**
 	 * Extracts the given errors stack trace as a string.
