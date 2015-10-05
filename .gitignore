@@ -22,3 +22,5 @@ target/
 
 #Ignore working directory
 ajdocworkingdir/
+/ajcore**
+/nohup.out
